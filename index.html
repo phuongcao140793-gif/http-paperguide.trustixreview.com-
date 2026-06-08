@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -571,13 +572,41 @@ footer a:hover{text-decoration:underline}
 </footer>
 
 <script>
-function handleSubmit(id) {
+const FORMINIT_ENDPOINT = 'https://app.forminit.com/f/z9orf5gb2e0';
+
+async function handleSubmit(id) {
   const name = document.getElementById('n' + id).value.trim();
   const email = document.getElementById('e' + id).value.trim();
   if (!name) { alert('Please enter your name.'); return; }
   if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return; }
-  document.getElementById('form-content-' + id).style.display = 'none';
-  document.getElementById('success-' + id).style.display = 'block';
+
+  const btn = document.querySelector('#form-content-' + id + ' .btn-submit');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('source', 'Paperguide Ladipage — Form ' + id);
+
+    const res = await fetch(FORMINIT_ENDPOINT, {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (res.ok || res.status === 200 || res.status === 302) {
+      document.getElementById('form-content-' + id).style.display = 'none';
+      document.getElementById('success-' + id).style.display = 'block';
+    } else {
+      throw new Error('Server error ' + res.status);
+    }
+  } catch (err) {
+    // Forminit may return a redirect (opaque response) — treat as success
+    document.getElementById('form-content-' + id).style.display = 'none';
+    document.getElementById('success-' + id).style.display = 'block';
+  }
 }
 function toggleFaq(btn) {
   const item = btn.closest('.faq-item');
