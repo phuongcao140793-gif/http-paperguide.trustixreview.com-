@@ -292,7 +292,7 @@ footer a:hover{text-decoration:underline}
       <h3>Get your free Prompt Pack</h3>
       <p>Drop your email — delivered to your inbox instantly.</p>
       <div id="form-content-1">
-        <form action="https://app.forminit.com/f/z9orf5gb2e0" method="POST" target="iframe-1" onsubmit="onFormSubmit('1')">
+        <form onsubmit="onFormSubmit('1', event)">
           <input type="hidden" name="source" value="Hero Form">
           <div class="form-group">
             <label for="n1">Your name</label>
@@ -309,7 +309,6 @@ footer a:hover{text-decoration:underline}
             <span>📧 Instant</span>
           </div>
         </form>
-        <iframe name="iframe-1" style="display:none"></iframe>
       </div>
       <div class="success-msg" id="success-1">
         <div class="success-icon">✅</div>
@@ -524,7 +523,7 @@ footer a:hover{text-decoration:underline}
       <h3>Claim your free Prompt Pack</h3>
       <p>Join 1,000+ researchers — get it delivered instantly.</p>
       <div id="form-content-2">
-        <form action="https://app.forminit.com/f/z9orf5gb2e0" method="POST" target="iframe-2" onsubmit="onFormSubmit('2')">
+        <form onsubmit="onFormSubmit('2', event)">
           <input type="hidden" name="source" value="Bottom Form">
           <div class="form-group">
             <label for="n2">Your name</label>
@@ -541,7 +540,6 @@ footer a:hover{text-decoration:underline}
             <span>📧 Instant</span>
           </div>
         </form>
-        <iframe name="iframe-2" style="display:none"></iframe>
       </div>
       <div class="success-msg" id="success-2">
         <div class="success-icon">✅</div>
@@ -580,25 +578,35 @@ footer a:hover{text-decoration:underline}
 </footer>
 
 <script>
-function onFormSubmit(id) {
-  // Wait for iframe to load (Forminit posts then redirects)
-  var iframe = document.querySelector('iframe[name="iframe-' + id + '"]');
-  var btn = document.querySelector('#form-content-' + id + ' button[type="submit"]');
+async function onFormSubmit(id, event) {
+  event.preventDefault();
+  var form = event.target;
+  var btn = form.querySelector('button[type="submit"]');
+  var origText = btn.textContent;
   btn.textContent = 'Sending...';
   btn.disabled = true;
 
-  function showSuccess() {
-    document.getElementById('form-content-' + id).style.display = 'none';
-    document.getElementById('success-' + id).style.display = 'block';
+  try {
+    var data = new FormData(form);
+    var res = await fetch('https://formspree.io/f/xnjydnyg', {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+    var json = await res.json();
+    if (res.ok && json.ok) {
+      document.getElementById('form-content-' + id).style.display = 'none';
+      document.getElementById('success-' + id).style.display = 'block';
+    } else {
+      btn.textContent = origText;
+      btn.disabled = false;
+      alert('Something went wrong. Please try again.');
+    }
+  } catch(err) {
+    btn.textContent = origText;
+    btn.disabled = false;
+    alert('Network error. Please try again.');
   }
-
-  // Listen for iframe load (fires when Forminit redirect lands)
-  iframe.onload = function() {
-    showSuccess();
-  };
-
-  // Fallback: show success after 3s regardless
-  setTimeout(showSuccess, 3000);
 }
 function toggleFaq(btn) {
   const item = btn.closest('.faq-item');
