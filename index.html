@@ -582,31 +582,21 @@ async function onFormSubmit(id, event) {
   event.preventDefault();
   var form = event.target;
   var btn = form.querySelector('button[type="submit"]');
-  var origText = btn.textContent;
-  btn.textContent = 'Sending...';
+  btn.textContent = '⏳ Sending...';
   btn.disabled = true;
 
-  try {
-    var data = new FormData(form);
-    var res = await fetch('https://formspree.io/f/xnjydnyg', {
-      method: 'POST',
-      body: data,
-      headers: { 'Accept': 'application/json' }
-    });
-    var json = await res.json();
-    if (res.ok && json.ok) {
-      // Redirect to thank you page
-      window.location.href = '/thank-you.html';
-    } else {
-      btn.textContent = origText;
-      btn.disabled = false;
-      alert('Something went wrong. Please try again.');
-    }
-  } catch(err) {
-    btn.textContent = origText;
-    btn.disabled = false;
-    alert('Network error. Please try again.');
-  }
+  // Send to Formspree in background — don't block redirect
+  var data = new FormData(form);
+  fetch('https://formspree.io/f/xnjydnyg', {
+    method: 'POST',
+    body: data,
+    headers: { 'Accept': 'application/json' }
+  }).catch(function(){});
+
+  // Redirect after 1.5s regardless
+  setTimeout(function() {
+    window.location.href = 'https://paperguide.trustixreview.com/thank-you.html';
+  }, 1500);
 }
 function toggleFaq(btn) {
   const item = btn.closest('.faq-item');
