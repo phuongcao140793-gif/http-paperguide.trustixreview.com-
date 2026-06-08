@@ -581,10 +581,24 @@ footer a:hover{text-decoration:underline}
 
 <script>
 function onFormSubmit(id) {
-  setTimeout(function() {
+  // Wait for iframe to load (Forminit posts then redirects)
+  var iframe = document.querySelector('iframe[name="iframe-' + id + '"]');
+  var btn = document.querySelector('#form-content-' + id + ' button[type="submit"]');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  function showSuccess() {
     document.getElementById('form-content-' + id).style.display = 'none';
     document.getElementById('success-' + id).style.display = 'block';
-  }, 800);
+  }
+
+  // Listen for iframe load (fires when Forminit redirect lands)
+  iframe.onload = function() {
+    showSuccess();
+  };
+
+  // Fallback: show success after 3s regardless
+  setTimeout(showSuccess, 3000);
 }
 function toggleFaq(btn) {
   const item = btn.closest('.faq-item');
