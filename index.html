@@ -595,8 +595,8 @@ async function onFormSubmit(id, event) {
     });
     var json = await res.json();
     if (res.ok && json.ok) {
-      document.getElementById('form-content-' + id).style.display = 'none';
-      document.getElementById('success-' + id).style.display = 'block';
+      // Redirect to thank you page
+      window.location.href = '/thank-you.html';
     } else {
       btn.textContent = origText;
       btn.disabled = false;
