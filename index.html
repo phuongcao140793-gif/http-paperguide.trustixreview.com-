@@ -292,20 +292,24 @@ footer a:hover{text-decoration:underline}
       <h3>Get your free Prompt Pack</h3>
       <p>Drop your email — delivered to your inbox instantly.</p>
       <div id="form-content-1">
-        <div class="form-group">
-          <label for="n1">Your name</label>
-          <input type="text" id="n1" placeholder="Jane Smith">
-        </div>
-        <div class="form-group">
-          <label for="e1">Email address</label>
-          <input type="email" id="e1" placeholder="you@example.com">
-        </div>
-        <button class="btn-submit" onclick="handleSubmit('1')">🎁 Send me 50 AI Prompts — Free</button>
-        <div class="form-trust-row">
-          <span>🔒 No spam</span>
-          <span>✓ Free forever</span>
-          <span>📧 Instant</span>
-        </div>
+        <form action="https://app.forminit.com/f/z9orf5gb2e0" method="POST" target="iframe-1" onsubmit="onFormSubmit('1')">
+          <input type="hidden" name="source" value="Hero Form">
+          <div class="form-group">
+            <label for="n1">Your name</label>
+            <input type="text" id="n1" name="name" placeholder="Jane Smith" required>
+          </div>
+          <div class="form-group">
+            <label for="e1">Email address</label>
+            <input type="email" id="e1" name="email" placeholder="you@example.com" required>
+          </div>
+          <button type="submit" class="btn-submit">🎁 Send me 50 AI Prompts — Free</button>
+          <div class="form-trust-row">
+            <span>🔒 No spam</span>
+            <span>✓ Free forever</span>
+            <span>📧 Instant</span>
+          </div>
+        </form>
+        <iframe name="iframe-1" style="display:none"></iframe>
       </div>
       <div class="success-msg" id="success-1">
         <div class="success-icon">✅</div>
@@ -520,20 +524,24 @@ footer a:hover{text-decoration:underline}
       <h3>Claim your free Prompt Pack</h3>
       <p>Join 1,000+ researchers — get it delivered instantly.</p>
       <div id="form-content-2">
-        <div class="form-group">
-          <label for="n2">Your name</label>
-          <input type="text" id="n2" placeholder="Jane Smith">
-        </div>
-        <div class="form-group">
-          <label for="e2">Email address</label>
-          <input type="email" id="e2" placeholder="you@example.com">
-        </div>
-        <button class="btn-submit" onclick="handleSubmit('2')">🎁 Send me 50 AI Prompts — Free</button>
-        <div class="form-trust-row">
-          <span>🔒 No spam</span>
-          <span>✓ Free forever</span>
-          <span>📧 Instant</span>
-        </div>
+        <form action="https://app.forminit.com/f/z9orf5gb2e0" method="POST" target="iframe-2" onsubmit="onFormSubmit('2')">
+          <input type="hidden" name="source" value="Bottom Form">
+          <div class="form-group">
+            <label for="n2">Your name</label>
+            <input type="text" id="n2" name="name" placeholder="Jane Smith" required>
+          </div>
+          <div class="form-group">
+            <label for="e2">Email address</label>
+            <input type="email" id="e2" name="email" placeholder="you@example.com" required>
+          </div>
+          <button type="submit" class="btn-submit">🎁 Send me 50 AI Prompts — Free</button>
+          <div class="form-trust-row">
+            <span>🔒 No spam</span>
+            <span>✓ Free forever</span>
+            <span>📧 Instant</span>
+          </div>
+        </form>
+        <iframe name="iframe-2" style="display:none"></iframe>
       </div>
       <div class="success-msg" id="success-2">
         <div class="success-icon">✅</div>
@@ -572,41 +580,11 @@ footer a:hover{text-decoration:underline}
 </footer>
 
 <script>
-const FORMINIT_ENDPOINT = 'https://app.forminit.com/f/z9orf5gb2e0';
-
-async function handleSubmit(id) {
-  const name = document.getElementById('n' + id).value.trim();
-  const email = document.getElementById('e' + id).value.trim();
-  if (!name) { alert('Please enter your name.'); return; }
-  if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return; }
-
-  const btn = document.querySelector('#form-content-' + id + ' .btn-submit');
-  btn.textContent = 'Sending...';
-  btn.disabled = true;
-
-  try {
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('email', email);
-    formData.append('source', 'Paperguide Ladipage — Form ' + id);
-
-    const res = await fetch(FORMINIT_ENDPOINT, {
-      method: 'POST',
-      body: formData,
-      headers: { 'Accept': 'application/json' }
-    });
-
-    if (res.ok || res.status === 200 || res.status === 302) {
-      document.getElementById('form-content-' + id).style.display = 'none';
-      document.getElementById('success-' + id).style.display = 'block';
-    } else {
-      throw new Error('Server error ' + res.status);
-    }
-  } catch (err) {
-    // Forminit may return a redirect (opaque response) — treat as success
+function onFormSubmit(id) {
+  setTimeout(function() {
     document.getElementById('form-content-' + id).style.display = 'none';
     document.getElementById('success-' + id).style.display = 'block';
-  }
+  }, 800);
 }
 function toggleFaq(btn) {
   const item = btn.closest('.faq-item');
